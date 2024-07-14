@@ -1,5 +1,5 @@
 {
-  "name": "harmony",
+  "name": "hexcord",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^5.2.3",
+    "@radix-ui/react-slot": "^1.1.0",
     "@types/node": "20.14.10",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
