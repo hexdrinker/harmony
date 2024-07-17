@@ -3,6 +3,7 @@
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
 
 import {
   Dialog,
@@ -22,8 +23,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FileEdit } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import FileUpload from '@/components/file-upload'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -36,6 +38,7 @@ const formSchema = z.object({
 
 const InitialModal = () => {
   const [isMounted, setIsMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setIsMounted(true)
@@ -52,7 +55,14 @@ const InitialModal = () => {
   const isLoading = form.formState.isSubmitting
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values)
+    try {
+      await axios.post('/api/servers', values)
+      form.reset()
+      router.refresh()
+      window.location.reload()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   if (!isMounted) {
@@ -64,11 +74,11 @@ const InitialModal = () => {
       <DialogContent className='bg-white text-black p-0 overflow-hidden'>
         <DialogHeader className='pt-8 px-5'>
           <DialogTitle className='text-2xl text-center text-bold'>
-            서버 커스터마이징
+            Customize your server
           </DialogTitle>
           <DialogDescription className='text-center text-zinc-500'>
-            이름과 이미지로 서버에 개성을 부여하세요. 나중에 언제든지 변경할 수
-            있습니다.
+            Give your server a personality with a name an image. You can always
+            change it later.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -78,7 +88,21 @@ const InitialModal = () => {
           >
             <div className='space-y-8 px-6'>
               <div className='flex items-center justify-center text-center'>
-                TODO: Image Upload
+                <FormField
+                  control={form.control}
+                  name='imageUrl'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <FileUpload
+                          endpoint='serverImage'
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <FormField
@@ -87,14 +111,14 @@ const InitialModal = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className='uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70'>
-                      서버 이름
+                      server name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
                         className='bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0'
-                        placeholder='서버 이름을 입력하세요.'
-                        {...FileEdit}
+                        placeholder='Enter server name'
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -107,7 +131,7 @@ const InitialModal = () => {
                 variant='primary'
                 disabled={isLoading}
               >
-                생성
+                Create
               </Button>
             </DialogFooter>
           </form>
