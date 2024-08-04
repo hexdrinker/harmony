@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { LiveKitRoom, VideoConference } from '@livekit/components-react'
 import '@livekit/components-styles'
 import { Channel } from '@prisma/client'
@@ -16,7 +16,7 @@ const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
   const { user } = useUser()
   const [token, setToken] = useState('')
 
-  const setLiveKit = async () => {
+  const setLiveKit = useCallback(async () => {
     if (!user?.firstName || !user?.lastName) return
 
     const name = `${user.firstName} ${user.lastName}`
@@ -28,11 +28,11 @@ const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
     } catch (e) {
       console.log(e)
     }
-  }
+  }, [user?.firstName, user?.lastName, chatId])
 
   useEffect(() => {
     setLiveKit()
-  }, [user?.firstName, user?.lastName, chatId])
+  }, [setLiveKit])
 
   if (token === '') {
     return (

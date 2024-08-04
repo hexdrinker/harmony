@@ -2,6 +2,7 @@ import { currentProfile } from '@/lib/current-profile'
 import { db } from '@/lib/db'
 import { Message } from '@prisma/client'
 import { NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 
 const MESSAGES_BATCH = 10
 
